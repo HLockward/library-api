@@ -1,0 +1,22 @@
+{
+  "name": "library-api",
+  "version": "1.0.0",
+  "description": "REST API build with node and express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HLockward/library-api.git"
+  },
+  "author": "Harold Lockward",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HLockward/library-api/issues"
+  },
+  "homepage": "https://github.com/HLockward/library-api#readme",
+  "dependencies": {
+    "express": "4.16.3"
+  }
+}
