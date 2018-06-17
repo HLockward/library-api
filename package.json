@@ -4,7 +4,7 @@
   "description": "REST API build with node and express",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/HLockward/library-api#readme",
   "dependencies": {
-    "express": "4.16.3"
+    "express": "4.16.3",
+    "joi": "13.4.0",
+    "nodemon": "1.17.5"
   }
 }
