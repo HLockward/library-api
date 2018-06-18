@@ -31,12 +31,16 @@ const bookRoutes = (app) =>
       
       app.get('/api/books/:id', (req,res) => {
         const id = parseInt(req.params.id);
-        const book = books.find(b => b.id === id);
-        if(!book){
-         return res.status(404).send("The book with the given ID was not Found.");
+        if(isNaN(id)){
+          return res.json(500,{"msg":"The id must be numeric"});
         }
-        res.json(book);
-      })
+        bookModel.getBookById(id,(err,data) =>{
+          if(typeof data === 'undefined' || data.length < 1){
+            return res.status(404).send("The book with the given ID was not Found.");
+          }
+          res.json(data);
+        });
+      });
       
       app.post('/api/books',(req,res) =>{
         
