@@ -19,7 +19,7 @@ class BookModel {
 
     getBookById(id,callback){
         if(connection){
-            connection.query(`select b.* from books as b where b.ID = ${id}`,
+            connection.query('select b.* from books as b where b.ID =?',id,
             (err, row) => {
                 if(err){
                     throw err;
@@ -29,6 +29,35 @@ class BookModel {
             });
         }
     };
+
+    insertBook(data, callback){
+        if(connection){
+            connection.query('INSERT INTO books SET ?',data, (err, result) => {
+                if(err) {
+                    throw err;
+                }else{
+                    callback(null, {
+                        'insertId': result.insertId
+                    })
+                }
+            });
+        }
+    }
+
+    updateBook(id,data, callback){
+        if(connection){
+            connection.query('UPDATE books SET ? WHERE id =?',[data,id],(err, result) =>{
+                if(err){
+                    throw err;
+                }else{
+                    callback(null,{
+                        msg: result.message
+                    })
+                }
+            });
+        }
+    }
+
 }
 
 module.exports = BookModel;

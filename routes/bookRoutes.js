@@ -16,7 +16,11 @@ const bookRoutes = (app) =>
       
       const validateBook = (book) => {
         const schema = {
-          name: Joi.string().min(3).required()
+          name: Joi.string().min(5).max(100).required(),
+          description: Joi.string(),
+          author_id: Joi.number().required(),
+          gender_id: Joi.number().required(),
+          created_by: Joi.number().required()
         };
         return Joi.validate(book, schema);
       }
@@ -51,22 +55,71 @@ const bookRoutes = (app) =>
         }
       
         const book = {
-          id: books.length + 1,
-          name: req.body.name
+          id: null,
+          name: req.body.name,
+          description: req.body.description,
+          author_id: req.body.author_id,
+          gender_id: req.body.gender_id,
+          created_by: req.body.created_by,
+          created_at : null
         };
-        books.push(book);
-        res.json(book);
-      
+       
+        bookModel.insertBook(book,(err,data) =>{
+          if(typeof data === 'undefined' || data.insertId){
+            res.json({
+              success: true,
+              msg: 'Book inserted',
+              data:data
+            });
+          }else{
+            res.status(500).json({
+              success: false,
+              msg: 'Error'
+            });
+          }
+        });
       });
       
       
       app.put('/api/books/:id', (req,res) =>{
         const id = parseInt(req.params.id);
-        const book = books.find(b => b.id === id);
-        if(!book){
-          return res.status(404).send("The book with the given ID was not Found.");
-        } 
-      
+        if(isNaN(id)){
+          return res.json(500,{"msg":"The id must be numeric"});
+        }
+
+        const book = {
+          name: req.body.name,
+          description: req.body.description,
+          author_id: req.body.author_id,
+          gender_id: req.body.gender_id,
+          created_by: req.body.created_by
+        };
+
+        bookModel.getBookById(id,(err,data) =>{
+          if(typeof data === 'undefined' || data.length < 1){
+            return res.status(404).send("The book with the given ID was not Found.");
+          }
+
+          bookModel.updateBook(id,book,(err,data) =>{
+            if(typeof data === 'undefined' || data){
+              res.json({
+                success: true,
+                msg: 'Book updated',
+                data:data
+              });
+            }else{
+              res.status(500).json({
+                success: false,
+                msg: 'Error'
+              });
+            }
+          });
+
+          
+        });
+
+        
+      /*
         const {error} = validateBook(req.body);
         
         if(error){
@@ -74,7 +127,7 @@ const bookRoutes = (app) =>
         }
       
         book.name = req.body.name;
-        res.json(book);
+        res.json(book);*/
       
       });
       
