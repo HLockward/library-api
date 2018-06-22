@@ -14,7 +14,14 @@ const bookRoutes = (app) =>
         {id: 3, name: "vive la vida como un perro", author:"Harold Lockward"}
       ];
       
-      const validateBook = (book) => {
+      const validateParams = (params) =>{
+        const schema = {
+          id: Joi.number().required()
+        }
+        return Joi.validate(params,schema);
+      }
+      
+      const validateBookCreation = (book) => {
         const schema = {
           name: Joi.string().min(5).max(100).required(),
           description: Joi.string(),
@@ -25,6 +32,16 @@ const bookRoutes = (app) =>
         return Joi.validate(book, schema);
       }
       
+      const validateBookUpdating = (book) => {
+        const schema = {
+          name: Joi.string().min(5).max(100),
+          description: Joi.string(),
+          author_id: Joi.number(),
+          gender_id: Joi.number(),
+          created_by: Joi.number()
+        };
+        return Joi.validate(book, schema);
+      }
       
       
       app.get('/api/books', (req,res) => {
@@ -34,10 +51,14 @@ const bookRoutes = (app) =>
       });
       
       app.get('/api/books/:id', (req,res) => {
-        const id = parseInt(req.params.id);
-        if(isNaN(id)){
-          return res.json(500,{"msg":"The id must be numeric"});
+
+        const {error} = validateParams(req.params);
+        if(error){
+          return res.status(400).send(error.details[0].message);
         }
+
+        const id = parseInt(req.params.id);
+
         bookModel.getBookById(id,(err,data) =>{
           if(typeof data === 'undefined' || data.length < 1){
             return res.status(404).send("The book with the given ID was not Found.");
@@ -48,7 +69,7 @@ const bookRoutes = (app) =>
       
       app.post('/api/books',(req,res) =>{
         
-        const {error} = validateBook(req.body);
+        const {error} = validateBookCreation(req.body);
         
         if(error){
           return res.status(400).send(error.details[0].message);
@@ -82,18 +103,22 @@ const bookRoutes = (app) =>
       
       
       app.put('/api/books/:id', (req,res) =>{
+
+        const params = validateParams(req.params);
+        if(params.error){
+          return res.status(400).send(params.error.details[0].message);
+        }
         const id = parseInt(req.params.id);
-        if(isNaN(id)){
-          return res.json(500,{"msg":"The id must be numeric"});
+
+        if(req.body.constructor === Object && Object.keys(req.body).length === 0) {
+          return res.json(500,{"msg":"theres isn't value to update"}); 
         }
 
-        const book = {
-          name: req.body.name,
-          description: req.body.description,
-          author_id: req.body.author_id,
-          gender_id: req.body.gender_id,
-          created_by: req.body.created_by
-        };
+        const {error} = validateBookUpdating(req.body);
+        if(error){
+          return res.status(400).send(error.details[0].message);
+        }
+        const book = req.body;
 
         bookModel.getBookById(id,(err,data) =>{
           if(typeof data === 'undefined' || data.length < 1){
@@ -114,35 +139,39 @@ const bookRoutes = (app) =>
               });
             }
           });
-
-          
         });
-
-        
-      /*
-        const {error} = validateBook(req.body);
-        
-        if(error){
-          return res.status(400).send(error.details[0].message); 
-        }
-      
-        book.name = req.body.name;
-        res.json(book);*/
       
       });
       
       app.delete('/api/books/:id', (req,res) => {
+        
+        const {error} = validateParams(req.params);
+        if(error){
+          return res.status(400).send(error.details[0].message);
+        }
+
         const id = parseInt(req.params.id);
-        const book = books.find(b => b.id === id);
-        if(!book){
-          return res.status(404).send("The book with the given ID was not Found.");
-        } 
       
-        const index = books.indexOf(book);
-        books.splice(index,1);
-      
-        res.json(book);
-      
+        bookModel.getBookById(id,(err,data) =>{
+          if(typeof data === 'undefined' || data.length < 1){
+            return res.status(404).send("The book with the given ID was not Found.");
+          }
+
+          bookModel.deleteBook(id,(err,data) =>{
+            if(typeof data === 'undefined' || data){
+              res.json({
+                success: true,
+                msg: 'Book deleted',
+                data:data
+              });
+            }else{
+              res.status(500).json({
+                success: false,
+                msg: 'Error'
+              });
+            }
+          });
+        });  
       });
       
 };

@@ -58,6 +58,20 @@ class BookModel {
         }
     }
 
+    deleteBook(id,callback){
+        if(connection){
+            connection.query('DELETE FROM library.books WHERE ID =?',id,(err,result) => {
+                if(err){
+                    throw err;
+                }else{
+                    callback('null',{
+                        msg: result.message
+                    })
+                }
+            });
+        }
+    }
+
 }
 
 module.exports = BookModel;
