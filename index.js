@@ -11,6 +11,8 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 
+app.get('/', (req, res) => res.send('Welcome to my API!!'));
+
 bookRoutes(app);
 
 app.listen(port,() =>

@@ -6,14 +6,6 @@ const bookModel = new BookModel();
 const bookRoutes = (app) =>
 {
 
-    app.get('/', (req, res) => res.send('Welcome to my API!!'));
-
-    const books = [
-        {id: 1, name: "como la has cagado", author: "Harold Lockward"},
-        {id: 2, name: "por que ser responsable no deja", author: "Harold Lockward"},
-        {id: 3, name: "vive la vida como un perro", author:"Harold Lockward"}
-      ];
-      
       const validateParams = (params) =>{
         const schema = {
           id: Joi.number().required()
