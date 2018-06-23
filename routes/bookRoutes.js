@@ -38,6 +38,9 @@ const bookRoutes = (app) =>
       
       app.get('/api/books', (req,res) => {
         bookModel.getBooks((err, data) => {
+          if(typeof data === 'undefined' || data.length < 1){
+            return res.status(404).send("Not data.");
+          }
           res.json(data);
         });
       });
@@ -68,13 +71,11 @@ const bookRoutes = (app) =>
         }
       
         const book = {
-          id: null,
           name: req.body.name,
           description: req.body.description,
           author_id: req.body.author_id,
           gender_id: req.body.gender_id,
-          created_by: req.body.created_by,
-          created_at : null
+          created_by: req.body.created_by
         };
        
         bookModel.insertBook(book,(err,data) =>{
