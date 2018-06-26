@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const bookRoutes = require('./routes/bookRoutes');
 const authorRoutes = require('./routes/authorRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -16,6 +17,7 @@ app.get('/', (req, res) => res.send('Welcome to my API!!'));
 
 bookRoutes(app);
 authorRoutes(app);
+userRoutes(app);
 
 app.listen(port,() =>
   console.log(`Running on PORT ${port}`)  
