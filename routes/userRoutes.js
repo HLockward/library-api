@@ -1,5 +1,6 @@
 const UserModel = require('../models/userModel');
 const Joi = require('joi');
+const sha1 = require('sha1');
 
 const userModel = new UserModel();
 
@@ -66,7 +67,7 @@ const userRoutes = (app) =>
 
         const user = {
             user_name : req.body.user_name,
-            password: req.body.password,
+            password: sha1(req.body.password),
             name: req.body.name,
             last_name: req.body.last_name,
             created_by: req.body.created_by
@@ -117,8 +118,6 @@ const userRoutes = (app) =>
           return res.status(400).send(error.details[0].message);
         }
         const user = req.body;
-
-        
 
           userModel.updateUser(id,user,(err,data) =>{
             if(typeof data === 'undefined' || data){
